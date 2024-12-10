@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Define the parameter grid
+dims=(5 10)
+margins=(0.001)
+lrs=(0.01 0.005 0.001 0.0005)
+batch_sizes=(1024 2048 8192)
+
+# Define the dataset and train_non_basic_percent
+datasets=("MCG")
+mode=("ball")
+hybrid=(1)
+add_denominator=("non" "in" "out")
+lamda=(0.0 0.5 1)
+train_non_basic_percents=(0)
+
+# Create a log file
+log_file="results_ours/grid_search_results_MCG.log"
+echo "Grid Search Results" > $log_file
+
+# Iterate over all combinations of parameters
+for dataset in "${datasets[@]}"; do
+  for train_non_basic_percent in "${train_non_basic_percents[@]}"; do
+    for dim in "${dims[@]}"; do
+      for margin in "${margins[@]}"; do
+        for lr in "${lrs[@]}"; do
+          for batch_size in "${batch_sizes[@]}"; do
+            for m in "${mode[@]}"; do
+              for ad in "${add_denominator[@]}"; do
+                for hy in "${hybrid[@]}"; do
+                  for l in "${lamda[@]}"; do
+                    # Construct the command string
+                    command="python train_box.py -debug 1 -dataset $dataset -train_non_basic_percent $train_non_basic_percent
+                    -dim $dim -margin $margin -epoch 500 -lr $lr -eval_method energy -loss_type contrastive
+                    -batch_size $batch_size -grid_search 1 -mode $m -add_denominator $ad -use_threshold 1 -hybrid $hy -lamda $l"
+
+                    # Execute the command
+                    echo "Running: $command"
+                    eval $command
+                    # eval $command | tee >(while read -r line; do echo "$line"; echo "$line" >> $log_file; done)
+                    # result=$(eval $command)
+
+                    # echo "Result: $result"
+
+                    # Log the results
+                    echo "Command: $command" >> $log_file
+                    # echo "Result: $result" >> $log_file
+                    echo "----------------------------------------" >> $log_file
+                  done
+                done
+              done
+            done
+          done
+        done
+      done
+    done
+  done
+done
