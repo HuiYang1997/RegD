@@ -1,12 +1,7 @@
-import HTorch
-from HTorch.layers import HEmbedding
 import torch
 import math
 from torch.nn import LeakyReLU
 from torch.nn import functional as F
-
-arcosh = HTorch.utils.arcosh
-arsinh = HTorch.utils.arsinh
 
 
 def sigmoid(x):
