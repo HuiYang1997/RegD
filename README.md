@@ -1,4 +1,4 @@
-# RegD: Hierarchical Data Embedding Framework
+# RegD: Modeling Hierarchies by Distances of Regions
 
 ## About
 
