@@ -38,48 +38,43 @@ class depthBox(torch.nn.Module):
             -1, 1)
 
         # initialize denominator
-        if self.mode == 'box':
-            dim_deominator = 2 * dim
-        else:
-            dim_deominator = dim + 1
-
         self.denominator = torch.nn.Sequential(
-            torch.nn.Linear(dim_deominator, self.dim),
+            torch.nn.Linear(dim, 2*self.dim),
             torch.nn.ReLU(),
-            torch.nn.Linear(self.dim, 1),
+            torch.nn.Linear(2*self.dim, 1),
             torch.nn.Softplus(),
         ).to(self.device)
 
     def depthdistance_box(self, parent_center, parent_offset, children_center, children_offset):
-        factor = ((parent_center - children_center).abs().sum(dim=-1)
-                  + torch.abs(parent_offset - children_offset).sum(dim=-1))
+        factor = ((parent_center - children_center).square().sum(dim=-1)
+                  + (parent_offset - children_offset).square().sum(dim=-1))
 
-        denominator = self.denominator(torch.cat([parent_center, parent_offset], dim=-1))
-        denominator = denominator * self.denominator(torch.cat([children_center, children_center], dim=-1))
+        denominator = self.denominator(parent_center) * self.denominator(children_center)
+
+        dist = factor / ((parent_offset.norm(dim=-1)) * (children_offset.norm(dim=-1)))
         if self.add_denominator == 'in':
-            dist = factor / (denominator.squeeze(-1) * (parent_offset * children_offset).abs().sum(dim=-1))
+            dist = dist / (denominator.squeeze(-1))
         elif self.add_denominator == 'out':
-            dist = (denominator.squeeze(-1) * factor) / (parent_offset * children_offset).abs().sum(dim=-1)
+            dist = denominator.squeeze(-1) * dist
         elif self.add_denominator == 'non':
-            dist = factor / ((parent_offset.norm(dim=-1)) * (children_offset.norm(dim=-1)))
+            pass
         else:
             raise ValueError('add_denominator must be either in, out or non')
 
         return dist
 
     def depthdistance(self, parent_center, parent_offset_z, children_center, children_offset_z):
-        factor = (parent_center - children_center).abs().sum(dim=-1) + torch.abs(parent_offset_z - children_offset_z)
+        factor = (parent_center - children_center).square().sum(dim=-1) + (parent_offset_z - children_offset_z).square()
 
-        denominator = self.denominator(torch.cat([parent_center, parent_offset_z.unsqueeze(-1)], dim=-1))
-        denominator = denominator * self.denominator(
-            torch.cat([children_center, children_offset_z.unsqueeze(-1)], dim=-1))
+        denominator = self.denominator(parent_center) * self.denominator(children_center)
 
+        dist = factor / (parent_offset_z * children_offset_z)
         if self.add_denominator == 'in':
-            dist = factor / (denominator.squeeze(-1) * parent_offset_z * children_offset_z)
+            dist = dist / (denominator.squeeze(-1))
         elif self.add_denominator == 'out':
-            dist = (denominator.squeeze(-1) * factor) / (parent_offset_z * children_offset_z)
+            dist = (denominator.squeeze(-1)) * dist
         elif self.add_denominator == 'non':
-            dist = factor / (parent_offset_z * children_offset_z)
+            pass
         else:
             raise ValueError('add_denominator must be either in, out or non')
 
@@ -100,9 +95,11 @@ class depthBox(torch.nn.Module):
                 assert self.hybrid == 0
                 return diff
             elif self.mode == 'box':
-                t = torch.max(diff, dim=-1)[0]
+                # t = torch.max(diff, dim=-1)[0]
+                t = torch.norm(F.relu(diff), dim=-1)
+                t1 = torch.max(diff, dim=-1)[0]
                 assert self.hybrid == 0
-                return t
+                return torch.where(t > 0, t, t1)
             else:
                 raise ValueError('mode must be either box or ball')
         else:
@@ -125,7 +122,6 @@ class depthBox(torch.nn.Module):
     def get_embedding(self, box):
         center = box[..., :self.dim]
         offset = F.softplus(box[..., self.dim:])
-        # offset = torch.exp(box[..., self.dim:])
         return center, offset
 
     def energy(self, parent, children):
@@ -198,7 +194,7 @@ class depthBox(torch.nn.Module):
 
         if self.training:
             return dist_to_boundary + self.lamda * torch.where(dist_to_boundary < 0, torch.zeros_like(dist_to_boundary),
-                                                               dist_apex)
+                                                           dist_apex)
         else:
             return dist_to_boundary + self.lamda * dist_apex
 
