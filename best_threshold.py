@@ -56,40 +56,7 @@ def find_best_threshold_with_scipy(y_scores, y_true, metric=f1_score):
     return best_threshold, best_metric_score, best_precision, best_recall
 
 
-# def find_best_threshold_with_scipy(scores, labels):
-#     """
-#     使用 scipy 的优化方法来最大化 F1 值。
-#
-#     参数：
-#         scores: 模型预测的得分或概率 (numpy array)
-#         labels: 真实标签 (numpy array, 0 或 1)
-#
-#     返回：
-#         best_threshold: 最优阈值
-#         best_f1: 对应的最高 F1 值
-#     """
-#     def f1_loss(threshold):
-#         # 根据当前阈值进行分类
-#         preds = (scores <= threshold).astype(int)
-#         # 返回负的 F1 值（因为我们需要最大化）
-#         return -f1_score(labels, preds)
-#
-#     # 在 [0, 1] 范围内寻找最优阈值
-#     result = minimize_scalar(f1_loss, bounds=(0, 1), method='bounded')
-#     best_threshold = result.x
-#     best_f1 = -result.fun  # 因为我们优化的是负 F1 值
-#
-#     # Apply threshold to get binary predictions
-#     predictions = (scores <= best_threshold).astype(int)
-#
-#     # Calculate precision and recall
-#     precision = precision_score(labels, predictions)
-#     recall = recall_score(labels, predictions)
-#
-#     return best_threshold, best_f1, precision, recall
-
 if __name__ == '__main__':
-    # 示例数据
     scores = np.array([0.1, 0.4, 0.35, 0.8])
     labels = np.array([0, 0, 1, 1])
 
