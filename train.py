@@ -10,9 +10,9 @@ import argparse
 import time
 from BoxDistBoundary import depthBox
 import torch.optim as optim
-from initial_box import *
 from best_threshold import *
 from tqdm import tqdm
+import random
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # torch.set_default_tensor_type('torch.DoubleTensor')
@@ -143,12 +143,12 @@ def evaluate(model, pos_loader, neg_loader, method="partial", threshold=0., rati
 
 
 def argument_parser():
-    parser = argparse.ArgumentParser(description='Hyperbolic Umbral and Penumbral Cone')
+    parser = argparse.ArgumentParser(description='RegD')
     ############# Dataset configurations
     parser.add_argument('-dataset', type=str, choices=['mammal', 'noun', 'MCG', 'hearst'], default='mammal',
                         help='dataset (mammal | verb | noun)')
     parser.add_argument('-train_non_basic_percent', type=int, choices=[0, 1, 2, 5, 10, 25, 50, 90],
-                        default=10, help="percentage of non basic edges in training set: (0 | 10 | 25 | 50 | 90)")
+                        default=0, help="percentage of non basic edges in training set: (0 | 10 | 25 | 50 | 90)")
     ############# model configurations
     parser.add_argument('-dim', type=int, default=2, help="dimension of hyperbolic embeddings")
     parser.add_argument('-margin', type=float, default=0.001,
@@ -256,17 +256,6 @@ if __name__ == '__main__':
                 f"recall: {test_triplet['recall']}, "
                 f"f1: {test_triplet['f1']}, "
                 f"{args} \n ")
-
-    # # test model
-    # radius_list = [0.01, 0.05, 0.06, 0.1, 0.2, 0.3]
-    # ratio_list = [math.asinh(r) / math.asin(0.05) for r in radius_list]
-    # print(ratio_list)
-    # print("best threshold", threshold)
-    # for ratio in ratio_list:
-    #     test_triplet = evaluate(depthbox, test_pos_loader, test_neg_loader, method=args.eval_method,
-    #                             threshold=threshold, ratio=ratio)
-    #     print({'ratio': ratio, 'test precision': test_triplet['precision'], 'recall': test_triplet['recall'],
-    #            'f1': test_triplet['f1']})
 
     # save model
     if args.save_model:
