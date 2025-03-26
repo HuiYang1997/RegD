@@ -1,0 +1,71 @@
+python train.py -debug 1 -dataset noun -train_non_basic_percent 0 -dim 5 -margin 0.001 -epoch 400 -lr 0.01 -eval_method energy -loss_type contrastive -batch_size 2048 -mode ball -add_denominator non -use_threshold 1 -hybrid 0 -lamda 1.0
+
+number of nodes 82114
+model dim 5
+non basic percentage 0
+dim: 5, margin: 0.001
+weight torch.Size([82114, 10])
+Namespace(dataset='noun', train_non_basic_percent=0, dim=5, margin=0.001, depth_type='norm', loss_type='contrastive', lr=0.01, weight_decay=0.0, epoch=400, neg_size=10, batch_size=2048, neg_sampl_strategy='all', where_not_to_sample='children', eval_method='energy', eval_freq=20, save_model=False, seed=43, debug=1, grid_search=0, mode='ball', add_denominator='non', use_threshold=1, hybrid=0, lamda=1.0, data_dir='data_utils/data/maxn/noun_closure.tsv')
+  5%|█████████▎                                                                                                                                                                                           | 19/400 [00:05<01:34,  4.02it/s]epoch 19 training time: 0.24
+epoch 19 evaluate time: 1.35
+loss: 0.05, val: {'threshold': 0.123, 'precision': 0.17, 'recall': 0.64, 'f1': 0.27}
+ 10%|███████████████████▏                                                                                                                                                                                 | 39/400 [00:11<01:30,  4.00it/s]epoch 39 training time: 0.25
+epoch 39 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.105, 'precision': 0.22, 'recall': 0.52, 'f1': 0.31}
+ 15%|█████████████████████████████                                                                                                                                                                        | 59/400 [00:17<01:24,  4.01it/s]epoch 59 training time: 0.35
+epoch 59 evaluate time: 1.23
+loss: 0.05, val: {'threshold': 0.111, 'precision': 0.29, 'recall': 0.46, 'f1': 0.36}
+ 20%|██████████████████████████████████████▉                                                                                                                                                              | 79/400 [00:24<01:23,  3.85it/s]epoch 79 training time: 0.25
+epoch 79 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.132, 'precision': 0.34, 'recall': 0.46, 'f1': 0.39}
+ 25%|████████████████████████████████████████████████▊                                                                                                                                                    | 99/400 [00:30<01:09,  4.36it/s]epoch 99 training time: 0.33
+epoch 99 evaluate time: 1.12
+loss: 0.05, val: {'threshold': 0.158, 'precision': 0.38, 'recall': 0.46, 'f1': 0.42}
+ 30%|██████████████████████████████████████████████████████████▎                                                                                                                                         | 119/400 [00:36<01:05,  4.32it/s]epoch 119 training time: 0.23
+epoch 119 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.166, 'precision': 0.44, 'recall': 0.46, 'f1': 0.45}
+ 35%|████████████████████████████████████████████████████████████████████                                                                                                                                | 139/400 [00:42<01:03,  4.08it/s]epoch 139 training time: 0.25
+epoch 139 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.177, 'precision': 0.48, 'recall': 0.46, 'f1': 0.47}
+ 40%|█████████████████████████████████████████████████████████████████████████████▉                                                                                                                      | 159/400 [00:48<00:56,  4.30it/s]epoch 159 training time: 0.23
+epoch 159 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.199, 'precision': 0.5, 'recall': 0.48, 'f1': 0.49}
+ 45%|███████████████████████████████████████████████████████████████████████████████████████▋                                                                                                            | 179/400 [00:54<00:51,  4.32it/s]epoch 179 training time: 0.23
+epoch 179 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.217, 'precision': 0.52, 'recall': 0.5, 'f1': 0.51}
+ 50%|█████████████████████████████████████████████████████████████████████████████████████████████████▌                                                                                                  | 199/400 [01:00<00:46,  4.32it/s]epoch 199 training time: 0.33
+epoch 199 evaluate time: 1.23
+loss: 0.05, val: {'threshold': 0.23, 'precision': 0.53, 'recall': 0.51, 'f1': 0.52}
+ 55%|███████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                                                                        | 219/400 [01:06<00:43,  4.13it/s]epoch 219 training time: 0.23
+epoch 219 evaluate time: 1.33
+loss: 0.05, val: {'threshold': 0.24, 'precision': 0.54, 'recall': 0.52, 'f1': 0.53}
+ 60%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                                                                               | 239/400 [01:12<00:37,  4.33it/s]epoch 239 training time: 0.23
+epoch 239 evaluate time: 1.23
+loss: 0.05, val: {'threshold': 0.211, 'precision': 0.59, 'recall': 0.5, 'f1': 0.54}
+ 65%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉                                                                     | 259/400 [01:18<00:32,  4.34it/s]epoch 259 training time: 0.23
+epoch 259 evaluate time: 1.24
+loss: 0.05, val: {'threshold': 0.238, 'precision': 0.58, 'recall': 0.52, 'f1': 0.55}
+ 70%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▋                                                           | 279/400 [01:24<00:28,  4.24it/s]epoch 279 training time: 0.23
+epoch 279 evaluate time: 1.24
+loss: 0.05, val: {'threshold': 0.247, 'precision': 0.58, 'recall': 0.54, 'f1': 0.56}
+ 75%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▌                                                 | 299/400 [01:30<00:23,  4.21it/s]epoch 299 training time: 0.23
+epoch 299 evaluate time: 1.24
+loss: 0.05, val: {'threshold': 0.237, 'precision': 0.61, 'recall': 0.53, 'f1': 0.57}
+ 80%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                       | 319/400 [01:36<00:19,  4.19it/s]epoch 319 training time: 0.23
+epoch 319 evaluate time: 1.12
+loss: 0.05, val: {'threshold': 0.237, 'precision': 0.61, 'recall': 0.53, 'f1': 0.57}
+ 85%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                              | 339/400 [01:42<00:15,  4.06it/s]epoch 339 training time: 0.23
+epoch 339 evaluate time: 1.24
+loss: 0.05, val: {'threshold': 0.246, 'precision': 0.61, 'recall': 0.54, 'f1': 0.58}
+ 90%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉                    | 359/400 [01:48<00:09,  4.14it/s]epoch 359 training time: 0.23
+epoch 359 evaluate time: 1.12
+loss: 0.05, val: {'threshold': 0.246, 'precision': 0.61, 'recall': 0.54, 'f1': 0.58}
+ 95%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▋          | 379/400 [01:54<00:05,  3.95it/s]epoch 379 training time: 0.23
+epoch 379 evaluate time: 1.23
+loss: 0.05, val: {'threshold': 0.246, 'precision': 0.61, 'recall': 0.54, 'f1': 0.58}
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▌| 399/400 [02:00<00:00,  4.05it/s]epoch 399 training time: 0.23
+epoch 399 evaluate time: 1.12
+loss: 0.05, val: {'threshold': 0.217, 'precision': 0.64, 'recall': 0.54, 'f1': 0.59}
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 400/400 [02:02<00:00,  3.27it/s]
+best val: {'threshold': 0.217, 'precision': 0.64, 'recall': 0.54, 'f1': 0.59, 'epoch_best': 399}
+{'test precision': 63.6, 'recall': 53.9, 'f1': 58.4}
