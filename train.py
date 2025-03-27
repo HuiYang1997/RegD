@@ -181,6 +181,7 @@ def argument_parser():
     parser.add_argument("-use_threshold", type=int, default=1, help="whether to use threshold")
     parser.add_argument("-hybrid", type=int, default=0, help="whether to use hybrid boundary distance")
     parser.add_argument("-lamda", type=float, default=1.0, help="weight of depth distance")
+    parser.add_argument("-p", type=int, default=2, help="p of Lp norm")
 
     args = parser.parse_args()
     return args
@@ -231,7 +232,7 @@ if __name__ == '__main__':
 
     depthbox = depthBox(num_entities=size, dim=args.dim, margin=args.margin, depth_type=args.depth_type,
                         device=device, mode=args.mode, add_denominator=args.add_denominator, hybrid=args.hybrid,
-                        lamda=args.lamda)
+                        lamda=args.lamda, p=args.p)
 
     print(f"dim: {depthbox.dim}, margin: {depthbox.margin}")
     for name, param in depthbox.emb.named_parameters():
@@ -239,7 +240,7 @@ if __name__ == '__main__':
 
     depthbox_eval = depthBox(num_entities=size, dim=args.dim, margin=args.margin, depth_type=args.depth_type,
                              device=device, mode=args.mode, add_denominator=args.add_denominator, hybrid=args.hybrid,
-                             lamda=args.lamda)
+                             lamda=args.lamda, p=args.p)
 
     print(args)
     optimizer = optim.Adam(depthbox.parameters(), lr=args.lr, weight_decay=args.weight_decay)
