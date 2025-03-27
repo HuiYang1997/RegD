@@ -12,10 +12,25 @@ This implementation is based on the [ShadowCones](https://github.com/ydtydr/Shad
 - PyTorch >= 1.12.1
 
 ### Setup
-1. Clone the repository
-2. Install the required dependencies:
-```bash
-pip install -r requirements.txt
+ 
+```
+# Create a new conda environment
+conda create -n myenv python=3.9.20
+
+# Activate the environment
+conda activate myenv
+
+# Install packages with specific versions
+pip install \
+    torch==2.5.0 \
+    torchaudio==2.5.0 \
+    torchvision==0.20.0 \
+    six==1.16.0 \
+    tqdm==4.66.5 \
+    scikit-learn==1.5.2 \
+    numpy==1.26.4 \
+    gensim==4.3.3
+
 ```
 
 ### Dataset Preparation
