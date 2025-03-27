@@ -15,7 +15,7 @@ class depthBox(torch.nn.Module):
     """
 
     def __init__(self, num_entities: int, dim: int, margin: float, depth_type: str, device: str, mode: str,
-                 add_denominator: str, hybrid: int, lamda: float = 1.0):
+                 add_denominator: str, hybrid: int, lamda: float = 1.0, p: int = 2):
         super().__init__()
         self.curvature = 1.0
         self.sub_apex_dist = 0.0001
@@ -30,6 +30,7 @@ class depthBox(torch.nn.Module):
         self.dim = dim
         self.margin = margin
         self.depth_type = depth_type
+        self.p = p
 
         # initialize embeddings
         self.emb = torch.nn.Embedding(num_entities, dim * 2).to(device)
@@ -46,8 +47,14 @@ class depthBox(torch.nn.Module):
         ).to(self.device)
 
     def depthdistance_box(self, parent_center, parent_offset, children_center, children_offset):
-        factor = ((parent_center - children_center).square().sum(dim=-1)
-                  + (parent_offset - children_offset).square().sum(dim=-1))
+        if self.p == 1:
+            factor = ((parent_center - children_center).abs().sum(dim=-1)
+                      + torch.abs(parent_offset - children_offset).sum(dim=-1))
+        elif self.p == 2:
+            factor = ((parent_center - children_center).square().sum(dim=-1)
+                      + (parent_offset - children_offset).square().sum(dim=-1))
+        else:
+            raise ValueError('p must be either 1 or 2')
 
         denominator = self.denominator(parent_center) * self.denominator(children_center)
 
@@ -64,7 +71,12 @@ class depthBox(torch.nn.Module):
         return dist
 
     def depthdistance(self, parent_center, parent_offset_z, children_center, children_offset_z):
-        factor = (parent_center - children_center).square().sum(dim=-1) + (parent_offset_z - children_offset_z).square()
+        if self.p == 1:
+            factor = (parent_center - children_center).abs().sum(dim=-1) + torch.abs(parent_offset_z - children_offset_z)
+        elif self.p == 2:
+            factor = (parent_center - children_center).square().sum(dim=-1) + (parent_offset_z - children_offset_z).square()
+        else:
+            raise ValueError('p must be either 1 or 2')
 
         denominator = self.denominator(parent_center) * self.denominator(children_center)
 
