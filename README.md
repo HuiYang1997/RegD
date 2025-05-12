@@ -1,8 +1,8 @@
-# RegD: Modeling Hierarchies by Distances of Regions
+# Achieving Hyperbolic-Like Expressiveness with Arbitrary Euclidean Regions: A New Approach to Hierarchical Embeddings
 
 ## About
 
-RegD is a framework for embedding hierarchical data as regions in Euclidean spaces. 
+This is the implementation of RegD, a framework for embedding hierarchical data as regions in Euclidean spaces. 
 This implementation is based on the [ShadowCones](https://github.com/ydtydr/ShadowCones) project.
 
 ## Installation
