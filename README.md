@@ -50,6 +50,11 @@ To train the model, use the following command:
 python train.py -dataset mammal -dim 2 -epoch 400 -lr 0.01 -mode box -hybrid 0 -lamda 1.0
 ```
 
+## Illustration
+
+The resulting embeddings are illustrated in `mammal_dim=2_ball.png`. In this figure, the x-axis represents the sum of the coordinates of each center (i.e., *x* + *y* for a center located at (*x*, *y*)), while the y-axis represents the corresponding radius. As shown in the figure, our embeddings effectively capture the hierarchical structure of the mammal dataset.
+
+
 ### Parameters
 - `dataset`: Name of the dataset to use (e.g., "mammal", "MCG", "hearst")
 - `mode`: Type of region to use for embedding:
