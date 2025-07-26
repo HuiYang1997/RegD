@@ -7,6 +7,9 @@ This implementation is based on the [ShadowCones](https://github.com/ydtydr/Shad
 
 ## Illustration
 
+
+![Embedding visualization](mammal_dim=2_ball.png)
+
 The resulting embeddings are illustrated in `mammal_dim=2_ball.png`. In this figure, the x-axis represents the sum of the coordinates of each center (i.e., *x* + *y* for a center located at (*x*, *y*)), while the y-axis represents the corresponding radius. As shown in the figure, our embeddings effectively capture the hierarchical structure of the mammal dataset.
 
 
