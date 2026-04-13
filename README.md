@@ -1,4 +1,4 @@
-# Achieving Hyperbolic-Like Expressiveness with Arbitrary Euclidean Regions: A New Approach to Hierarchical Embeddings
+# RegD: Hierarchical Embeddings via Dissimilarity between Arbitrary Euclidean Regions
 
 ## About
 
