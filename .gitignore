@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+*.pt
+runs/*.log
+data_utils/data/MCG
+data_utils/data/hearst

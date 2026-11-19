@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "regd"
+version = "0.1.0"
+description = "RegD: hierarchy embeddings as Euclidean regions (boxes and balls), trainable on any is-a graph"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Hui Yang" }]
+dependencies = ["torch>=1.12", "numpy"]
+
+[project.optional-dependencies]
+text = ["sentence-transformers"]
+plot = ["matplotlib"]
+test = ["pytest", "networkx", "matplotlib"]
+
+[project.scripts]
+regd = "regd.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/HuiYang1997/RegD"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
