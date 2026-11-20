@@ -75,7 +75,7 @@ def test_fit_tree(region, tmp_path):
 
 def test_presets_and_options():
     edges = tree(3)
-    for preset in ("paper", "strong-bce"):
+    for preset in ("strong-bce", "predict"):
         RegD(dim=2, preset=preset, epochs=20, device="cpu").fit(edges, verbose=False)
     for energy in ("poly", "exp"):
         m = RegD(dim=2, energy=energy, depth="logsqrt", lam=0.5, epochs=20, device="cpu").fit(edges, verbose=False)

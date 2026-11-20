@@ -2,7 +2,8 @@
 
 Same as the paper: the regions (boxes with centre and offsets, balls with centre and radius), the boundary distance
 `b`, the depth dissimilarity `d`, the energy `b + lam d` with the depth term switched off in training for contained
-pairs, the contrastive loss, the initialisation, Adam. `preset="paper"` follows the published protocol.
+pairs, the contrastive loss, the initialisation, Adam. To reproduce the paper itself, use the
+original code in [`paper/`](../paper/README.md).
 
 Training changes (model and energy unchanged):
 

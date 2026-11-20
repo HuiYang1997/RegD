@@ -2,8 +2,8 @@
 
 > This folder holds the code of the paper exactly as published. It used to sit at the root of the repository;
 > run every command below **from inside `paper/`** (`cd paper`). It does not need the `regd` package.
-> To train on your own graph, use the package described in the [main README](../README.md); its `preset="paper"`
-> follows the same protocol, and [docs/results.md](../docs/results.md) compares the two.
+> To train on your own graph, use the package described in the [main README](../README.md);
+> [docs/results.md](../docs/results.md) compares its results with those of the paper.
 
 ## About
 

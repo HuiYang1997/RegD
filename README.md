@@ -64,8 +64,6 @@ The defaults are meant to work as they are. If you change anything, these three 
 | the same, and tree-like (e.g. WordNet) | `strong-bce` | as `strong`, with a BCE loss |
 | incomplete, and you want to predict the missing edges | `predict` | assumes edges are missing: only the given edges themselves are never used as negatives, and nothing is inferred from them |
 
-(`paper` is a fourth preset that follows the published protocol; it is there for comparison.)
-
 **2. Region:** `box` (default) or `ball`. Neither is better everywhere; try both if the result matters.
 
 **3. Dimension:** start with `dim=5` (default). The benchmarks below use 2 to 10.
@@ -112,33 +110,63 @@ or lower the dimension.
 **Validation data.** Training picks the checkpoint and the threshold `tau` on validation pairs. Pass your own with
 `fit(edges, valid=(positive_pairs, negative_pairs))`. Without them, they are drawn from the graph itself.
 
+## Pretrained models
+
+Trained regions for WordNet, ready to load ([release `pretrained-v1`](https://github.com/HuiYang1997/RegD/releases/tag/pretrained-v1)).
+Node names are WordNet synsets such as `dog.n.01`.
+
+| file | graph | nodes | region, dim | test F1 | size |
+|---|---|---|---|---|---|
+| `wordnet_mammal_box_d5.pt` | WordNet mammals | 1,179 | box, 5 | 97.6 | 0.1 MB |
+| `wordnet_mammal_ball_d5.pt` | WordNet mammals | 1,179 | ball, 5 | 99.0 | 0.1 MB |
+| `wordnet_noun_box_d10.pt` | WordNet nouns | 82,114 | box, 10 | 53.6 | 10 MB |
+| `wordnet_noun_ball_d10.pt` | WordNet nouns | 82,114 | ball, 10 | 60.8 | 10 MB |
+
+```bash
+wget https://github.com/HuiYang1997/RegD/releases/download/pretrained-v1/wordnet_mammal_box_d5.pt
+```
+
+```python
+from regd import RegD
+model = RegD.load("wordnet_mammal_box_d5.pt")
+model.ancestors("bengal_tiger.n.01")
+```
+
+Each model also comes as `.npz` (arrays `nodes`, `center`, `offset` or `radius`, and `tau`) for use without this
+package. The models are trained with `strong-bce` on the direct is-a edges (`scripts/pretrain.py`); test F1 is
+measured on the paper's test pairs, which are pairs that follow from those edges.
+
+Known limit: the threshold `tau` is tuned on such inferred pairs and can be too strict for the direct edges
+themselves (for example, `wordnet_mammal_ball_d5` accepts only 36% of its own training edges). If you need the
+direct edges, use the box models or compare `model.score(child, parent)` with 0 instead of `model.tau`.
+
 ## Results
 
 Test F1 (%) on the 16 configurations of the paper (its splits and stored negatives; mammal 3 seeds, the others 2).
-"paper (Table 2)" is the published number; the other columns are runs of this package with the three presets.
+"paper (Table 2)" is the published number; the other two columns are runs of this package.
 
-| data, region, dim | paper (Table 2) | `paper` | `strong` | `strong-bce` |
-|---|---|---|---|---|
-| mammal, box, 2 | 64.9 | 65.7 | 90.8 | **95.9** |
-| mammal, box, 5 | 71.6 | 70.5 | 93.7 | **96.7** |
-| mammal, ball, 2 | 62.7 | 55.8 | 88.8 | **95.4** |
-| mammal, ball, 5 | 71.8 | 65.6 | 95.0 | **98.6** |
-| noun, box, 5 | 53.8 | 52.5 | 50.7 | **54.6** |
-| noun, box, 10 | 51.3 | 49.4 | 48.6 | **53.9** |
-| noun, ball, 5 | 58.4 | 54.2 | 50.0 | **59.7** |
-| noun, ball, 10 | 59.1 | 60.8 | 54.9 | **62.7** |
-| MCG, box, 5 | 50.7 | 41.7 | **71.5** | 62.7 |
-| MCG, box, 10 | 58.5 | 58.8 | **72.5** | 61.0 |
-| MCG, ball, 5 | 44.9 | 45.2 | 71.1 | **74.6** |
-| MCG, ball, 10 | 46.8 | 46.7 | 76.4 | **78.0** |
-| Hearst, box, 5 | 42.8 | 43.7 | **54.3** | 47.4 |
-| Hearst, box, 10 | 49.6 | 49.2 | **60.2** | 51.1 |
-| Hearst, ball, 5 | 37.7 | 37.6 | **52.7** | 46.4 |
-| Hearst, ball, 10 | 37.7 | 37.7 | **58.6** | 58.1 |
-| mean | 53.9 | 52.2 | 68.1 | 68.5 |
+| data, region, dim | paper (Table 2) | `strong` | `strong-bce` |
+|---|---|---|---|
+| mammal, box, 2 | 64.9 | 90.8 | **95.9** |
+| mammal, box, 5 | 71.6 | 93.7 | **96.7** |
+| mammal, ball, 2 | 62.7 | 88.8 | **95.4** |
+| mammal, ball, 5 | 71.8 | 95.0 | **98.6** |
+| noun, box, 5 | 53.8 | 50.7 | **54.6** |
+| noun, box, 10 | 51.3 | 48.6 | **53.9** |
+| noun, ball, 5 | 58.4 | 50.0 | **59.7** |
+| noun, ball, 10 | 59.1 | 54.9 | **62.7** |
+| MCG, box, 5 | 50.7 | **71.5** | 62.7 |
+| MCG, box, 10 | 58.5 | **72.5** | 61.0 |
+| MCG, ball, 5 | 44.9 | 71.1 | **74.6** |
+| MCG, ball, 10 | 46.8 | 76.4 | **78.0** |
+| Hearst, box, 5 | 42.8 | **54.3** | 47.4 |
+| Hearst, box, 10 | 49.6 | **60.2** | 51.1 |
+| Hearst, ball, 5 | 37.7 | **52.7** | 46.4 |
+| Hearst, ball, 10 | 37.7 | **58.6** | 58.1 |
+| mean | 53.9 | 68.1 | 68.5 |
 
-Per data set, the means are: mammal 64.4 / 92.1 / 96.6, noun 54.2 / 51.0 / 57.7, MCG 48.1 / 72.9 / 69.1,
-Hearst 42.1 / 56.4 / 50.7 (`paper` / `strong` / `strong-bce`).
+Per data set, the means are: mammal 92.1 / 96.6, noun 51.0 / 57.7, MCG 72.9 / 69.1, Hearst 56.4 / 50.7
+(`strong` / `strong-bce`).
 
 - `strong-bce` is better on the two WordNet graphs (mammal, noun), `strong` on the two extracted graphs (MCG, Hearst).
 - With the `strong` presets every predicted relation is transitive.
@@ -164,7 +192,7 @@ The complete list, including what is left out of the package: [docs/relation-to-
 ```
 src/regd/    the package
 tests/       its tests:  pip install ".[test]" && pytest
-scripts/     benchmark scripts behind the result tables
+scripts/     benchmark scripts behind the result tables; pretrain.py made the pretrained models
 runs/        the records of those benchmark runs
 docs/        options.md, results.md, relation-to-paper.md
 examples/    quickstart.ipynb, the notebook linked above

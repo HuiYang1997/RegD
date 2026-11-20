@@ -101,8 +101,6 @@ def options_table():
 
 
 PRESETS = {
-    # the published protocol: negatives drawn once and unfiltered, margins 0 / 0.001, threshold tuned on validation
-    "paper": dict(loss="cross", margin=0.001, pos_margin=0.0, negatives="fixed", neg_filter="none", rule="tuned"),
     # 'T1x': the paper's loss with margins 0.01, negatives re-drawn every epoch and filtered by the training closure
     "strong": dict(loss="cross", margin=0.01, pos_margin=0.01, negatives="fresh", neg_filter="closure",
                    rule="transitive"),

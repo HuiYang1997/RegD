@@ -15,7 +15,6 @@ A preset is a named set of option values.
 | `strong` (default) | the paper's loss, margins 0.01 | re-drawn every epoch; never a pair from the transitive closure of the training edges | `b <= tau`, `tau <= 0` (transitive) |
 | `strong-bce` | BCE, temperature 0.1 | as above | as above |
 | `predict` | BCE | re-drawn every epoch; only the training edges themselves are excluded | as above |
-| `paper` | the paper's loss, margins 0 / 0.001 | drawn once, unfiltered | energy `b + lam d <= tau`, free `tau` |
 
 ## Regions
 
@@ -83,4 +82,4 @@ the table is free afterwards. `fit(..., texts={node: "text"})` supplies other te
 `fit(..., init_vectors={node: vector})` supplies precomputed vectors and needs no encoder.
 
 **The transitive rule and `boundary="volume"`.** The volume boundary is never negative, so with the transitive rule
-`tau` can only be 0. Use it with `rule="tuned"` (as `preset="paper"` does).
+`tau` can only be 0. Use it with `rule="tuned"`.

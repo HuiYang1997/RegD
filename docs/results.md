@@ -8,35 +8,32 @@ All numbers: the paper's splits and stored negatives, test F1 (%) of the decisio
 (records in `runs/*.jsonl`, commands from `scripts/paper_grid.py`; run from the repository root). Each configuration uses the paper's learning rate, batch
 size, epochs and `lam`; mammal 3 seeds, the others 2.
 
-| data, region, dim | paper (Table 2) | `paper` | `strong` | `strong-bce` |
-|---|---|---|---|---|
-| mammal, box, 2 | 64.9 | 65.7 | 90.8 | **95.9** |
-| mammal, box, 5 | 71.6 | 70.5 | 93.7 | **96.7** |
-| mammal, ball, 2 | 62.7 | 55.8 | 88.8 | **95.4** |
-| mammal, ball, 5 | 71.8 | 65.6 | 95.0 | **98.6** |
-| noun, box, 5 | 53.8 | 52.5 | 50.7 | **54.6** |
-| noun, box, 10 | 51.3 | 49.4 | 48.6 | **53.9** |
-| noun, ball, 5 | 58.4 | 54.2 | 50.0 | **59.7** |
-| noun, ball, 10 | 59.1 | 60.8 | 54.9 | **62.7** |
-| MCG, box, 5 | 50.7 | 41.7 | **71.5** | 62.7 |
-| MCG, box, 10 | 58.5 | 58.8 | **72.5** | 61.0 |
-| MCG, ball, 5 | 44.9 | 45.2 | 71.1 | **74.6** |
-| MCG, ball, 10 | 46.8 | 46.7 | 76.4 | **78.0** |
-| Hearst, box, 5 | 42.8 | 43.7 | **54.3** | 47.4 |
-| Hearst, box, 10 | 49.6 | 49.2 | **60.2** | 51.1 |
-| Hearst, ball, 5 | 37.7 | 37.6 | **52.7** | 46.4 |
-| Hearst, ball, 10 | 37.7 | 37.7 | **58.6** | 58.1 |
-| mean | 53.9 | 52.2 | 68.1 | 68.5 |
+| data, region, dim | paper (Table 2) | `strong` | `strong-bce` |
+|---|---|---|---|
+| mammal, box, 2 | 64.9 | 90.8 | **95.9** |
+| mammal, box, 5 | 71.6 | 93.7 | **96.7** |
+| mammal, ball, 2 | 62.7 | 88.8 | **95.4** |
+| mammal, ball, 5 | 71.8 | 95.0 | **98.6** |
+| noun, box, 5 | 53.8 | 50.7 | **54.6** |
+| noun, box, 10 | 51.3 | 48.6 | **53.9** |
+| noun, ball, 5 | 58.4 | 50.0 | **59.7** |
+| noun, ball, 10 | 59.1 | 54.9 | **62.7** |
+| MCG, box, 5 | 50.7 | **71.5** | 62.7 |
+| MCG, box, 10 | 58.5 | **72.5** | 61.0 |
+| MCG, ball, 5 | 44.9 | 71.1 | **74.6** |
+| MCG, ball, 10 | 46.8 | 76.4 | **78.0** |
+| Hearst, box, 5 | 42.8 | **54.3** | 47.4 |
+| Hearst, box, 10 | 49.6 | **60.2** | 51.1 |
+| Hearst, ball, 5 | 37.7 | **52.7** | 46.4 |
+| Hearst, ball, 10 | 37.7 | **58.6** | 58.1 |
+| mean | 53.9 | 68.1 | 68.5 |
 
-- `paper` follows the published protocol and lands within about one point of Table 2 in 11 of 16 rows. The larger
-  gaps: the two mammal balls and noun ball 5 (single published runs; the authors' own 10-seed means are 56.7, 66.8
-  and 51.6) and MCG box 5, whose published setting uses a learned denominator that this package does not have.
-- With `strong` every predicted relation is transitive (0 violations in all runs). With `paper` between 0% and 45%
-  of the predicted chains `a < b < c` lack `a < c`.
+- "paper (Table 2)" is the number published in the paper; the other two columns are runs of this package.
+- With `strong` and `strong-bce` every predicted relation is transitive (0 violations in all runs).
 - `strong-bce` is the better choice on the two WordNet graphs, `strong` on the two extracted graphs (MCG, Hearst);
   taking the better of the two per data type gives a mean of 70.9. `strong` is the default because it loses less
   where it is not the best.
-- On noun the gain over the paper's protocol is small. That graph is trained for few steps per node (82,114 nodes).
+- On noun the gain over the paper's numbers is small. That graph is trained for few steps per node (82,114 nodes).
 
 ## One option at a time
 
