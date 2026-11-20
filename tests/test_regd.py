@@ -138,10 +138,10 @@ def test_cli(tmp_path, capsys):
 
 
 def test_same_numbers_as_original_code():
-    """b, d and the energies agree with the original BoxDistBoundary.depthBox (at the repository root, or in the
-    folder named by REGD_UPSTREAM)."""
+    """b, d and the energies agree with the original BoxDistBoundary.depthBox (in paper/, or in the folder named by
+    REGD_UPSTREAM)."""
     import os, sys
-    up = os.environ.get("REGD_UPSTREAM") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    up = os.environ.get("REGD_UPSTREAM") or os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "paper")
     if not os.path.exists(os.path.join(up, "BoxDistBoundary.py")):
         pytest.skip("original BoxDistBoundary.py not found")
     sys.path.insert(0, up)
@@ -164,3 +164,24 @@ def test_same_numbers_as_original_code():
         from regd.training import loss_fn
         assert torch.allclose(ref.loss_cross(e), loss_fn(e[:, 0], e[:, 1:], torch.ones(8, 9, dtype=torch.bool), cfg),
                               atol=1e-6)
+
+
+def test_lam_set(tmp_path):
+    edges = tree()
+    assert RegD(device="cpu").config.lam_set == (0.5,) and RegD(device="cpu").config.lam == 0.5   # default: one run
+    m = RegD(dim=2, lam_set=[0, 0.5], epochs=40, device="cpu")
+    assert m.config.lam_set == (0.0, 0.5) and m.config.lam is None
+    m.fit(edges, verbose=False)
+    assert [r["lam"] for r in m.lam_results] == [0.0, 0.5]
+    best = max(m.lam_results, key=lambda r: r["val_f1"])
+    assert m.config.lam in (0.0, 0.5) and m.summary()["val_f1"] == best["val_f1"]
+    m.save(tmp_path / "m.pt")
+    m2 = RegD.load(tmp_path / "m.pt")
+    assert m2.config.lam == m.config.lam and m2.lam_results == m.lam_results
+    assert m2.score("n5", "n0") == pytest.approx(m.score("n5", "n0"))
+    one = RegD(dim=2, lam=0.3, epochs=20, device="cpu")                 # lam=x is short for lam_set=[x]
+    assert one.config.lam_set == (0.3,) and one.config.lam == 0.3
+    assert len(one.fit(edges, verbose=False).lam_results) == 1
+    assert RegD(dim=2, lam_set=[1.0], device="cpu").config.lam == 1.0
+    with pytest.raises(TypeError):
+        RegD(lam=0.5, lam_set=[0, 0.5])

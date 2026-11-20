@@ -33,7 +33,7 @@ def main(argv=None):
     t.add_argument("--parent-first", action="store_true", help="lines are 'parent<TAB>child'")
     t.add_argument("--valid", nargs=2, metavar=("POS", "NEG"), help="validation pair files (same column order)")
     t.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE",
-                   help="other options (see 'regd options'), e.g. --set lam=0 epochs=200 init=text")
+                   help="other options (see 'regd options'), e.g. --set lam=0 epochs=200 init=text  or  lam_set=[0,0.5,1]")
     t.add_argument("--quiet", action="store_true")
 
     q = sub.add_parser("query", help="ancestors / descendants of a node, or the score of a pair")

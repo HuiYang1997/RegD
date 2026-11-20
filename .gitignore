@@ -6,5 +6,5 @@ dist/
 .pytest_cache/
 *.pt
 runs/*.log
-data_utils/data/MCG
-data_utils/data/hearst
+paper/data_utils/data/MCG
+paper/data_utils/data/hearst

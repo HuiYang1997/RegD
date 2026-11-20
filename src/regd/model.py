@@ -1,7 +1,7 @@
 """The user-facing RegD class."""
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields, replace
 
 import numpy as np
 import torch
@@ -28,7 +28,9 @@ class Config:
     energy: str = _opt("paper", "paper: b + lam*d;  poly: (1+b)(1+lam*d) - 1;  exp: e^b (1+lam*d) - 1", G.ENERGIES)
     depth: str = _opt("ratio", "depth dissimilarity d: the paper's ratio, the metric log(1+sqrt(q)), or plain L1",
                       G.DEPTHS)
-    lam: float = _opt(None, "weight of the depth term; default 0.5 up to dim 5 and 0 above")
+    lam_set: tuple = _opt((0.5,), "weights of the depth term to try: with several values fit() trains once per "
+                          "value and keeps the one with the best validation F1")
+    lam: float = _opt(None, "the weight in use, chosen from lam_set by fit(); lam=x is short for lam_set=[x]")
     p: int = _opt(None, "norm in the paper's d (depth=ratio); default 1 for boxes, 2 for balls", (1, 2))
     rule: str = _opt("transitive", "transitive: accept when score <= tau with tau <= 0 (score = b for the paper "
                      "energy, E for poly / exp);  tuned: the paper's free threshold on b + lam*d",
@@ -71,8 +73,14 @@ class Config:
             raise ValueError("boundary='volume' is defined for boxes only")
         if self.hard_frac > 0 and self.neg_filter == "none":
             raise ValueError("hard negatives need neg_filter='closure' or 'told' (otherwise true pairs are mined)")
-        if self.lam is None:
-            self.lam = 0.5 if self.dim <= 5 else 0.0
+        if self.lam is not None:
+            self.lam_set = (self.lam,)
+        if isinstance(self.lam_set, (int, float)):
+            self.lam_set = (self.lam_set,)
+        self.lam_set = tuple(float(x) for x in self.lam_set)
+        if not self.lam_set:
+            raise ValueError("lam_set needs at least one value")
+        self.lam = self.lam_set[0] if len(self.lam_set) == 1 else None
         if self.p is None:
             self.p = 1 if self.region == "box" else 2
         if self.lr is None:
@@ -120,12 +128,15 @@ class RegD:
         unknown = set(options) - known
         if unknown:
             raise TypeError(f"unknown options {sorted(unknown)}; available: {sorted(known)}")
+        if options.get("lam") is not None and options.get("lam_set") is not None:
+            raise TypeError("give lam or lam_set, not both")
         self.config = Config(dim=dim, region=region, **{**PRESETS[preset], **options}).resolve()
         self.preset = preset
         self.hierarchy = None
         self.weight = None
         self.tau = 0.0
         self.history = []
+        self.lam_results = []
 
     # ------------------------------------------------------------------ training
     def fit(self, edges, valid=None, nodes=None, parent_first=False, verbose=True, texts=None, init_vectors=None):
@@ -158,8 +169,20 @@ class RegD:
             init_vectors = encode_texts(names, self.config.encoder, device=self.config.device)
         elif self.config.init != "random":
             raise ValueError("init must be 'random' or 'text'")
-        self.weight, self.tau, self.history = train(h, self.config, vp, vn, verbose=verbose,
-                                                    init_vectors=init_vectors)
+        # one run per candidate lam (same seed, same validation pairs); the best validation F1 wins, the first on ties
+        best, self.lam_results = None, []
+        for lam in self.config.lam_set:
+            if verbose and len(self.config.lam_set) > 1:
+                print(f"--- lam = {lam:g}", flush=True)
+            weight, tau, history = train(h, replace(self.config, lam=lam), vp, vn, verbose=verbose,
+                                         init_vectors=init_vectors)
+            f1 = max((r["val_f1"] for r in history), default=-1.0)
+            self.lam_results.append({"lam": lam, "val_f1": f1})
+            if best is None or f1 > best[0]:
+                best = (f1, lam, weight, tau, history)
+        _, self.config.lam, self.weight, self.tau, self.history = best
+        if verbose and len(self.config.lam_set) > 1:
+            print(f"--- kept lam = {self.config.lam:g} (validation F1 {best[0]:.3f})", flush=True)
         return self
 
     # ------------------------------------------------------------------ queries
@@ -274,7 +297,7 @@ class RegD:
         self._check()
         torch.save({"format": "regd-1", "config": asdict(self.config), "preset": self.preset, "tau": self.tau,
                     "nodes": list(self.hierarchy.nodes), "edges": self.hierarchy.edges,
-                    "weight": self.weight.cpu(), "history": self.history}, path)
+                    "weight": self.weight.cpu(), "history": self.history, "lam_results": self.lam_results}, path)
 
     def export(self, path):
         """Write the regions as a table: .npz (arrays nodes / center / offset or radius) or text (.tsv: one node per
@@ -293,9 +316,11 @@ class RegD:
         """Size of the graph, the options that differ from the defaults of Config, and the validation result."""
         self._check()
         base = Config(dim=self.config.dim, region=self.config.region).resolve()
-        changed = {k: v for k, v in asdict(self.config).items() if getattr(base, k) != v and k != "device"}
+        changed = {k: v for k, v in asdict(self.config).items()
+                   if getattr(base, k) != v and k not in ("device", "lam")}
         return {"nodes": self.hierarchy.N, "edges": int(len(self.hierarchy.edges)), "dim": self.config.dim,
-                "region": self.config.region, "preset": self.preset, "options": changed, "tau": self.tau,
+                "region": self.config.region, "preset": self.preset, "options": changed, "lam": self.config.lam,
+                "lam_results": self.lam_results, "tau": self.tau,
                 "val_f1": max((h["val_f1"] for h in self.history), default=None),
                 "epochs_run": self.history[-1]["epoch"] if self.history else 0, "containment": self.containment()}
 
@@ -305,6 +330,7 @@ class RegD:
         m = cls.__new__(cls)
         m.config = Config(**{**d["config"], "device": device})
         m.preset, m.tau, m.history = d["preset"], d["tau"], d["history"]
+        m.lam_results = d.get("lam_results", [])
         nodes = d["nodes"]
         m.hierarchy = Hierarchy([(nodes[c], nodes[p]) for p, c in d["edges"]], nodes=nodes)
         m.weight = d["weight"].to(device)
