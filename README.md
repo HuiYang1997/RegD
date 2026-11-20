@@ -12,6 +12,13 @@ This repository has two parts. Pick the one you need:
 | embed **your own** hierarchy | the `regd` package, described on this page |
 | reproduce the experiments of the paper | [`paper/`](paper/README.md), the original code, unchanged |
 
+## Try it in the browser
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HuiYang1997/RegD/blob/main/examples/quickstart.ipynb)
+
+[`examples/quickstart.ipynb`](examples/quickstart.ipynb) installs the package, trains on a toy hierarchy and on the
+WordNet mammals, and shows queries, evaluation, a picture of the regions and saving. It runs on CPU in a minute or two.
+
 ## Install
 
 ```bash
@@ -160,5 +167,6 @@ tests/       its tests:  pip install ".[test]" && pytest
 scripts/     benchmark scripts behind the result tables
 runs/        the records of those benchmark runs
 docs/        options.md, results.md, relation-to-paper.md
+examples/    quickstart.ipynb, the notebook linked above
 paper/       the original code of the paper, with its own README
 ```
