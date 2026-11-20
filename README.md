@@ -1,13 +1,36 @@
-# RegD: Hierarchical Embeddings via Dissimilarity between Arbitrary Euclidean Regions
+<h1 align="center">RegD</h1>
+
+<p align="center">
+  <b>Hierarchical Embeddings via Dissimilarity between Arbitrary Euclidean Regions</b>
+</p>
+
+<p align="center">
+  <a href="https://colab.research.google.com/github/HuiYang1997/RegD/blob/main/examples/quickstart.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a>
+  <a href="https://github.com/HuiYang1997/RegD/releases/tag/pretrained-v1"><img src="https://img.shields.io/badge/pretrained-WordNet-0b6f78" alt="Pretrained models"></a>
+  <img src="https://img.shields.io/badge/python-3.9%2B-3776AB" alt="Python 3.9+">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="License: Apache-2.0"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#choosing-the-settings">Settings</a> ·
+  <a href="#pretrained-models">Pretrained models</a> ·
+  <a href="#results">Results</a> ·
+  <a href="paper/README.md">Paper code</a>
+</p>
 
 RegD embeds hierarchical data as regions in Euclidean space. Every node of an is-a graph becomes a box or a ball, and
 "x is-a y" becomes "the region of x lies inside the region of y".
 
-![Embedding visualization](docs/regions.png)
+<p align="center">
+  <img src="docs/regions.png" alt="Embedding visualization" width="720">
+</p>
 
-*The WordNet mammals as balls trained in 2 dimensions with this package. Every point is a node: the x-axis is the
-sum of the coordinates of its centre, the y-axis its radius; the lines are the is-a edges. General classes get large
-balls, their members small ones.*
+<p align="center"><sub>
+The WordNet mammals as balls trained in 2 dimensions with this package. Every point is a node: the x-axis is the sum
+of the coordinates of its centre, the y-axis its radius; the lines are the is-a edges. General classes get large
+balls, their members small ones.
+</sub></p>
 
 This repository has two parts. Pick the one you need:
 
@@ -16,12 +39,8 @@ This repository has two parts. Pick the one you need:
 | embed **your own** hierarchy | the `regd` package, described on this page |
 | reproduce the experiments of the paper | [`paper/`](paper/README.md), the original code, unchanged |
 
-## Try it in the browser
-
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HuiYang1997/RegD/blob/main/examples/quickstart.ipynb)
-
-[`examples/quickstart.ipynb`](examples/quickstart.ipynb) installs the package, trains on a toy hierarchy and on the
-WordNet mammals, and shows queries, evaluation, a picture of the regions and saving. It runs on CPU in a minute or two.
+To try the package without installing anything, open the
+[quick-start notebook](examples/quickstart.ipynb) in Colab with the badge above; it runs on CPU in a minute or two.
 
 ## Install
 
@@ -139,10 +158,6 @@ model.ancestors("bengal_tiger.n.01")
 Each model also comes as `.npz` (arrays `nodes`, `center`, `offset` or `radius`, and `tau`) for use without this
 package. The models are trained with `strong-bce` on the direct is-a edges (`scripts/pretrain.py`); test F1 is
 measured on the paper's test pairs, which are pairs that follow from those edges.
-
-Known limit: the threshold `tau` is tuned on such inferred pairs and can be too strict for the direct edges
-themselves (for example, `wordnet_mammal_ball_d5` accepts only 36% of its own training edges). If you need the
-direct edges, use the box models or compare `model.score(child, parent)` with 0 instead of `model.tau`.
 
 ## Results
 
