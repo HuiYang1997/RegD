@@ -3,11 +3,11 @@
 RegD embeds hierarchical data as regions in Euclidean space. Every node of an is-a graph becomes a box or a ball, and
 "x is-a y" becomes "the region of x lies inside the region of y".
 
-![Regions of four species and their ancestors](docs/regions.png)
+![Embedding visualization](docs/regions.png)
 
-*Four species of the WordNet mammals and all their ancestors, as balls trained in 2 dimensions: each region lies
-inside the regions of its ancestors. (Made with `scripts/readme_figure.py`; 56 of the 59 ancestor pairs shown are
-contained.)*
+*The WordNet mammals as balls trained in 2 dimensions with this package. Every point is a node: the x-axis is the
+sum of the coordinates of its centre, the y-axis its radius; the lines are the is-a edges. General classes get large
+balls, their members small ones.*
 
 This repository has two parts. Pick the one you need:
 
