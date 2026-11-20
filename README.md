@@ -7,7 +7,7 @@ RegD embeds hierarchical data as regions in Euclidean space. Every node of an is
 
 *Four species of the WordNet mammals and all their ancestors, as balls trained in 2 dimensions: each region lies
 inside the regions of its ancestors. (Made with `scripts/readme_figure.py`; 56 of the 59 ancestor pairs shown are
-strictly contained.)*
+contained.)*
 
 This repository has two parts. Pick the one you need:
 
